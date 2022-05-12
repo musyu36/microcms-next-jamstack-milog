@@ -33,6 +33,8 @@ const BlogId: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     <main>
       <h1>{blog.title}</h1>
       <p>{blog.publishedAt}</p>
+
+      {/* APIのレスポンスはHTMLタグも文字列として取得される文字列形式なのでHTMLとして描画するためにdangerouslySetInnerHTMLを使用 */}
       <div
         dangerouslySetInnerHTML={{
           __html: `${blog.body}`,
