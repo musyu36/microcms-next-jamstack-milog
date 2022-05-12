@@ -1,3 +1,7 @@
+import 'highlight.js/styles/hybrid.css';
+
+import cheerio from 'cheerio';
+import hljs from 'highlight.js';
 import { client } from 'libs/client';
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType, NextPage } from 'next';
 import { Params } from 'next/dist/server/router';
@@ -13,21 +17,31 @@ export const getStaticPaths: GetStaticPaths<Params> = async () => {
 
 export const getStaticProps: GetStaticProps<Params> = async (context) => {
   const id: string = context.params?.id as string;
-  const data = await client.get({ endpoint: "blog", contentId: id });
+  const blog = await client.get({ endpoint: "blog", contentId: id });
+
+  const $ = cheerio.load(blog.body);
+  $("pre code").each((_, elm) => {
+    const result = hljs.highlightAuto($(elm).text());
+    $(elm).html(result.value);
+    $(elm).addClass("hljs");
+  });
 
   return {
     props: {
-      blog: data,
+      blog,
+      highlightedBody: $.html(),
     },
   };
 };
 
 type Props = {
   blog: Blog;
+  highlightedBody: string;
 };
 
 const BlogId: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   blog,
+  highlightedBody,
 }: Props) => {
   return (
     <main>
@@ -37,7 +51,7 @@ const BlogId: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
       {/* APIのレスポンスはHTMLタグも文字列として取得される文字列形式なのでHTMLとして描画するためにdangerouslySetInnerHTMLを使用 */}
       <div
         dangerouslySetInnerHTML={{
-          __html: `${blog.body}`,
+          __html: `${highlightedBody}`,
         }}
       />
     </main>
