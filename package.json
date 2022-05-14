@@ -3,19 +3,25 @@
   "scripts": {
     "dev": "next",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "next lint --dir src"
   },
   "dependencies": {
     "@chakra-ui/icons": "^1.1.7",
     "@chakra-ui/react": "1.8.8",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
+    "cheerio": "^1.0.0-rc.10",
     "framer-motion": "^6",
+    "highlight.js": "^11.5.1",
+    "microcms-js-sdk": "^2.0.0",
     "next": "latest",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },
   "devDependencies": {
+    "@types/cheerio": "^0.22.31",
+    "@types/highlightjs": "^9.12.2",
     "@types/node": "^14.6.0",
     "@types/react": "^17.0.3",
     "@types/react-dom": "^17.0.3",

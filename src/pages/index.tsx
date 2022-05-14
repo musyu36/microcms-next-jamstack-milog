@@ -1,56 +1,39 @@
-import {
-  Link as ChakraLink,
-  Text,
-  Code,
-  List,
-  ListIcon,
-  ListItem,
-} from '@chakra-ui/react'
-import { CheckCircleIcon, LinkIcon } from '@chakra-ui/icons'
+import { client } from 'libs/client';
+import Link from 'next/link';
 
-import { Hero } from '../components/Hero'
-import { Container } from '../components/Container'
-import { Main } from '../components/Main'
-import { DarkModeSwitch } from '../components/DarkModeSwitch'
-import { CTA } from '../components/CTA'
-import { Footer } from '../components/Footer'
+import type { InferGetStaticPropsType, NextPage } from "next";
+import type { Blog } from "types/blog";
 
-const Index = () => (
-  <Container height="100vh">
-    <Hero />
-    <Main>
-      <Text color="text">
-        Example repository of <Code>Next.js</Code> + <Code>chakra-ui</Code> +{' '}
-        <Code>TypeScript</Code>.
-      </Text>
+export const getStaticProps = async () => {
+  const blog = await client.get({ endpoint: "blog" });
 
-      <List spacing={3} my={0} color="text">
-        <ListItem>
-          <ListIcon as={CheckCircleIcon} color="green.500" />
-          <ChakraLink
-            isExternal
-            href="https://chakra-ui.com"
-            flexGrow={1}
-            mr={2}
-          >
-            Chakra UI <LinkIcon />
-          </ChakraLink>
-        </ListItem>
-        <ListItem>
-          <ListIcon as={CheckCircleIcon} color="green.500" />
-          <ChakraLink isExternal href="https://nextjs.org" flexGrow={1} mr={2}>
-            Next.js <LinkIcon />
-          </ChakraLink>
-        </ListItem>
-      </List>
-    </Main>
+  return {
+    props: {
+      blogs: blog.contents,
+    },
+  };
+};
 
-    <DarkModeSwitch />
-    <Footer>
-      <Text>Next ❤️ Chakra</Text>
-    </Footer>
-    <CTA />
-  </Container>
-)
+type Props = {
+  blogs: Blog[];
+};
 
-export default Index
+const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
+  blogs,
+}: Props) => {
+  return (
+    <div>
+      <ul>
+        {blogs.map((blog) => (
+          <li key={blog.id}>
+            <Link href={`/blog/${blog.id}`}>
+              <a>{blog.title}</a>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default Home;
